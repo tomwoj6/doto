@@ -1,7 +1,0 @@
-doto_steam_auth_homepage:
-    path:     /
-    defaults: { _controller: DotoSteamAuthBundle:Default:index }
-
-doto_steam_login:
-    path: /login
-    defaults: { _controller: DotoSteamAuthBundle:Default:login }
