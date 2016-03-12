@@ -1,7 +1,3 @@
-findbulb:
-    resource: "@FindbulbBundle/Resources/config/routing.yml"
-    prefix:   /
-
 #paczka z userami i jej routing
 fos_user:
     resource: "@FOSUserBundle/Resources/config/routing/all.xml"

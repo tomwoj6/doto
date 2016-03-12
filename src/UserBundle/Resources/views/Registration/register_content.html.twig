@@ -1,0 +1,37 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% extends "UserBundle::noauthbase.html.twig" %}
+
+{#sam content#}
+
+{% block content %}
+    {% if not form.vars.valid %}
+        <div class="alert alert-danger alert-fixed">
+            {{ form.email.vars.errors|trim('ERROR: ') }}<br/>
+            {{ form.username.vars.errors|trim('ERROR: ') }}<br/>
+            {{ form.plainPassword.first.vars.errors|trim('ERROR: ') }}<br/>
+            {{ form.plainPassword.second.vars.errors|trim('ERROR: ') }}<br/>
+        </div>
+    {% endif %}
+    <div class="container">
+        <div class="form-container panel-body">
+            {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
+            <div class="form-group">
+                {{form_widget(form.email, {'attr': {'placeholder': 'e-mail'} }) }}
+            </div>
+            <div class="form-group">
+                {{form_widget(form.username, {'attr': {'placeholder': 'username'} }) }}
+            </div>
+            <div class="form-group">
+                {{form_widget(form.plainPassword.first, {'attr': {'placeholder': 'password'} }) }}
+            </div>
+            <div class="form-group">
+                {{form_widget(form.plainPassword.second, {'attr': {'placeholder': 'repeat password'} }) }}
+            </div>
+            <div class="form-group">
+                <input class="btn btn-primary" type="submit" value="{{ 'registration.submit'|trans }}" />
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock content %}
+
