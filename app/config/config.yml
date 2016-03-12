@@ -66,3 +66,11 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+
+# app/config/config.yml
+fos_oauth_server:
+    db_driver: orm       # Drivers available: orm, mongodb, or propel
+    client_class:        Doto\SteamAuthBundle\Entity\Client
+    access_token_class:  Doto\SteamAuthBundle\Entity\AccessToken
+    refresh_token_class: Doto\SteamAuthBundle\Entity\RefreshToken
+    auth_code_class:     Doto\SteamAuthBundle\Entity\AuthCode

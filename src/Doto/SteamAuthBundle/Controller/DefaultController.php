@@ -10,4 +10,10 @@ class DefaultController extends Controller
     {
         return $this->render('DotoSteamAuthBundle:Default:index.html.twig');
     }
+    
+    public function loginAction(){
+        
+        
+        return new \Symfony\Component\HttpFoundation\Response('doto login');
+    }
 }
