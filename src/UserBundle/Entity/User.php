@@ -2,14 +2,15 @@
 namespace UserBundle\Entity;
 
 
-use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Fp\OpenIdBundle\Entity\UserIdentity;
+
 /**
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
  * @ORM\Table(name="users")
  */
-class User extends BaseUser
+class User extends UserIdentity
 {
     public function __construct()
     {
@@ -25,23 +26,26 @@ class User extends BaseUser
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-    
 
-   
     /**
-     * @ORM\Column(name="avatar", type="string", length=255, unique=false)
+     * @ORM\Column(name="steamid", type="string", length=500, unique=false, nullable=true)
+     */
+    private $steamid;
+
+    /**
+     * @ORM\Column(name="avatar", type="string", length=255, unique=false, nullable=true)
      */
     private $avatar;
 
-    
+
     /**
      * @var ArrayCollection
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users", fetch="EAGER", cascade={"persist"})
      * @ORM\JoinTable(name="user_to_role")
      */
     protected $roles;
- 
-    
+
+
     public function getFullUsername(){
         return $this->firstname.' '.$this->lastname;
     }
@@ -158,5 +162,28 @@ class User extends BaseUser
     public function getAvatar()
     {
         return $this->avatar;
+    }
+
+    /**
+     * Set steamid
+     *
+     * @param string $steamid
+     * @return User
+     */
+    public function setSteamid($steamid)
+    {
+        $this->steamid = $steamid;
+    
+        return $this;
+    }
+
+    /**
+     * Get steamid
+     *
+     * @return string 
+     */
+    public function getSteamid()
+    {
+        return $this->steamid;
     }
 }
