@@ -2,21 +2,23 @@
 namespace UserBundle\Entity;
 
 
+use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use Fp\OpenIdBundle\Entity\UserIdentity;
-
 /**
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
  * @ORM\Table(name="users")
  */
-class User extends UserIdentity
+class User implements UserInterface
 {
+    const ROLE_DEFAULT = 'ROLE_USER';
+    const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+
     public function __construct()
     {
-        parent::__construct();
+//        parent::__construct();
         // your own logic
-        $this->passwordExpireAt = new \DateTime('next month');
+//        $this->passwordExpireAt = new \DateTime('next month');
         $this->roles = new ArrayCollection();
     }
     
@@ -27,15 +29,6 @@ class User extends UserIdentity
      */
     protected $id;
 
-    /**
-     * @ORM\Column(name="steamid", type="string", length=500, unique=false, nullable=true)
-     */
-    private $steamid;
-
-    /**
-     * @ORM\Column(name="avatar", type="string", length=255, unique=false, nullable=true)
-     */
-    private $avatar;
 
 
     /**
@@ -46,15 +39,29 @@ class User extends UserIdentity
     protected $roles;
 
 
-    public function getFullUsername(){
-        return $this->firstname.' '.$this->lastname;
+    /**
+     * @ORM\Column(name="steamid", type="string", length=500, unique=false)
+     */
+    private $steamid;
+
+    public function getSalt(){
+        return null;
+    }
+    public function getUsername(){
+        return $this->steamid;
+    }
+    public function getPassword(){
+        return null;
+    }
+    public function eraseCredentials(){
+        return null;
     }
     //Jak user nie ma zadnej roli to zwraca rolę uzytkownika
     public function getRolesWithDisplayName(){
         if (! $this->roles->count()) {
             return array(
                 array(
-                    'name' => parent::ROLE_DEFAULT,
+                    'name' => $this::ROLE_DEFAULT,
                     'displayName' => 'User'
                 )
             );
@@ -76,12 +83,12 @@ class User extends UserIdentity
     
     public function getRoles(){
         if (! $this->roles->count()) {
-            return array(parent::ROLE_DEFAULT);
+            return array($this::ROLE_DEFAULT);
         }
         $roles = $this->roles->toArray();
-        foreach ($this->getGroups() as $group) {
-            $roles = array_merge($roles, $group->getRoles());
-        }
+//        foreach ($this->getGroups() as $group) {
+//            $roles = array_merge($roles, $group->getRoles());
+//        }
         foreach ($roles as $k => $role) {
             /* 
              * Ensure String[] to prevent bad unserialized UsernamePasswordToken with for instance 
@@ -95,9 +102,9 @@ class User extends UserIdentity
     }
     public function getRoleById($roleId){
         $roles = $this->roles->toArray();
-        foreach ($this->getGroups() as $group) {
-            $roles = array_merge($roles, $group->getRoles());
-        }
+//        foreach ($this->getGroups() as $group) {
+//            $roles = array_merge($roles, $group->getRoles());
+//        }
         foreach ($roles as $r){
             if($r->getId() == $roleId){
                 return true;

@@ -38,34 +38,24 @@ class OpenIdUserManager extends UserManager
      */
     public function createUserFromIdentity($identity, array $attributes = array())
     {
-
-        // in this example, we fetch User entities by e-mail
+        $identityExploded = explode('/', $identity);
+        $steamid = end($identityExploded);
         $user = $this->entityManager->getRepository('UserBundle:User')->findOneBy(array(
-            'steamid' => $identity
+            'steamid' => $steamid
         ));
-
-
         if (null === $user) {
             $user = new User();
+            $user->setSteamid($steamid);
             $this->entityManager->persist($user);
             $this->entityManager->flush();
-//            throw new BadCredentialsException('No corresponding user!');
         }
-
-
-
-
         // we create an OpenIdIdentity for this User
         $openIdIdentity = new OpenIdIdentity();
         $openIdIdentity->setIdentity($identity);
         $openIdIdentity->setAttributes($attributes);
         $openIdIdentity->setUser($user);
-
         $this->entityManager->persist($openIdIdentity);
         $this->entityManager->flush();
-
-        // end of example
-
-        return $user; // you must return an UserInterface instance (or throw an exception)
+        return $user;
     }
 }

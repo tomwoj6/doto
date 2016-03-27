@@ -23,5 +23,7 @@ class UserBundle extends Bundle{
 //        );
 //    }
     //Pobieramy jako parenta FOS - pozwala na przeciazanie szablonow
-
+    function getParent(){
+        return 'FpOpenIdBundle';
+    }
 }
