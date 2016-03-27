@@ -1,0 +1,4 @@
+doto_homepage:
+    path:     /home
+    defaults: { _controller: DotoBundle:Default:index }
+
