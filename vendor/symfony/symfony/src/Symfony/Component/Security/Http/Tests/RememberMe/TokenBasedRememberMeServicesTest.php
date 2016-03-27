@@ -140,7 +140,7 @@ class TokenBasedRememberMeServicesTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Symfony\Component\Security\Core\Authentication\Token\RememberMeToken', $returnedToken);
         $this->assertSame($user, $returnedToken->getUser());
-        $this->assertEquals('fookey', $returnedToken->getKey());
+        $this->assertEquals('foosecret', $returnedToken->getSecret());
     }
 
     public function provideUsernamesForAutoLogin()
@@ -172,9 +172,8 @@ class TokenBasedRememberMeServicesTest extends \PHPUnit_Framework_TestCase
     {
         $service = $this->getService(null, array('name' => 'foo', 'path' => '/foo', 'domain' => 'foodomain.foo'));
         $request = new Request();
-        $response = new Response();
 
-        $service->loginFail($request, $response);
+        $service->loginFail($request);
 
         $cookie = $request->attributes->get(RememberMeServicesInterface::COOKIE_ATTR_NAME);
         $this->assertTrue($cookie->isCleared());
@@ -266,7 +265,7 @@ class TokenBasedRememberMeServicesTest extends \PHPUnit_Framework_TestCase
             $userProvider = $this->getProvider();
         }
 
-        $service = new TokenBasedRememberMeServices(array($userProvider), 'fookey', 'fookey', $options, $logger);
+        $service = new TokenBasedRememberMeServices(array($userProvider), 'foosecret', 'fookey', $options, $logger);
 
         return $service;
     }

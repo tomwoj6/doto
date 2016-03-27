@@ -13,20 +13,34 @@ security:
         
         main:
             pattern: ^/
-            form_login:
-                default_target_path: /home
-                login_path: /
-                provider: fos_userbundle
-                csrf_provider: security.csrf.token_manager 
             logout:       true
             anonymous:    true
-            
+            fp_openid:
+                create_user_if_not_exists: true # so createUserFromIdentity method will be called
+                provider: openid_user_manager # cf below
+                # previously we used 'contact/email' field. So we have to request it!
+                # Please note that all OpenID providers may not be able to provide all fields.
+                # check the desired provider documentation
+
+#            form_login:
+#                default_target_path: /home
+#                login_path: /
+#                provider: fos_userbundle
+#                csrf_provider: security.csrf.token_manager
+
 
     providers:
-        fos_userbundle:
-            id: fos_user.user_provider.username
+        # the order is important here
+        openid_user_manager:
+            id: user.openid_user_manager # the name of the service
+        # keep your database provider below! it may look like this:
+        database:
+            entity: { class: UserBundle:User, property: username }
+#        fos_userbundle:
+#            id: fos_user.user_provider.username
 
     access_control:
-        - { path: ^/home, role: IS_AUTHENTICATED_FULLY }
+#        - { path: ^/login_openid$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/home, role: IS_AUTHENTICATED_OPENID }
         - { path: ^/$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         

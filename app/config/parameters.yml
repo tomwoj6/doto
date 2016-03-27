@@ -10,3 +10,5 @@ parameters:
     mailer_user: null
     mailer_password: null
     secret: 2454bd91b444dfff6a3d67c9a639b1bf
+
+    apikey: 81CE1EE6B6F407AE35230D72C47FA7D4

@@ -277,7 +277,7 @@ class GetSetMethodNormalizerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(array(
             'bar' => 'bar',
-        ), $this->normalizer->normalize($obj, null, array('groups' => array('c'))));
+        ), $this->normalizer->normalize($obj, null, array(GetSetMethodNormalizer::GROUPS => array('c'))));
 
         $this->assertEquals(array(
             'symfony' => 'symfony',
@@ -286,7 +286,7 @@ class GetSetMethodNormalizerTest extends \PHPUnit_Framework_TestCase
             'bar' => 'bar',
             'kevin' => 'kevin',
             'coopTilleuls' => 'coopTilleuls',
-        ), $this->normalizer->normalize($obj, null, array('groups' => array('a', 'c'))));
+        ), $this->normalizer->normalize($obj, null, array(GetSetMethodNormalizer::GROUPS => array('a', 'c'))));
     }
 
     public function testGroupsDenormalize()
@@ -304,7 +304,7 @@ class GetSetMethodNormalizerTest extends \PHPUnit_Framework_TestCase
             $toNormalize,
             'Symfony\Component\Serializer\Tests\Fixtures\GroupDummy',
             null,
-            array('groups' => array('a'))
+            array(GetSetMethodNormalizer::GROUPS => array('a'))
         );
         $this->assertEquals($obj, $normalized);
 
@@ -314,7 +314,7 @@ class GetSetMethodNormalizerTest extends \PHPUnit_Framework_TestCase
             $toNormalize,
             'Symfony\Component\Serializer\Tests\Fixtures\GroupDummy',
             null,
-            array('groups' => array('a', 'b'))
+            array(GetSetMethodNormalizer::GROUPS => array('a', 'b'))
         );
         $this->assertEquals($obj, $normalized);
     }
@@ -336,7 +336,7 @@ class GetSetMethodNormalizerTest extends \PHPUnit_Framework_TestCase
                 'foo_bar' => '@dunglas',
                 'symfony' => '@coopTilleuls',
             ),
-            $this->normalizer->normalize($obj, null, array('groups' => array('name_converter')))
+            $this->normalizer->normalize($obj, null, array(GetSetMethodNormalizer::GROUPS => array('name_converter')))
         );
     }
 
@@ -357,7 +357,7 @@ class GetSetMethodNormalizerTest extends \PHPUnit_Framework_TestCase
                 'foo_bar' => '@dunglas',
                 'symfony' => '@coopTilleuls',
                 'coop_tilleuls' => 'les-tilleuls.coop',
-            ), 'Symfony\Component\Serializer\Tests\Fixtures\GroupDummy', null, array('groups' => array('name_converter')))
+            ), 'Symfony\Component\Serializer\Tests\Fixtures\GroupDummy', null, array(GetSetMethodNormalizer::GROUPS => array('name_converter')))
         );
     }
 
@@ -420,7 +420,6 @@ class GetSetMethodNormalizerTest extends \PHPUnit_Framework_TestCase
             array(
                 array(
                     'bar' => function ($bar) {
-                        return;
                     },
                 ),
                 'baz',
@@ -533,7 +532,7 @@ class GetSetMethodNormalizerTest extends \PHPUnit_Framework_TestCase
             array('bar' => 'bar'),
             __NAMESPACE__.'\GetSetDummy',
             null,
-            array('object_to_populate' => $dummy)
+            array(GetSetMethodNormalizer::OBJECT_TO_POPULATE => $dummy)
         );
 
         $this->assertEquals($dummy, $obj);
@@ -549,9 +548,22 @@ class GetSetMethodNormalizerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testDenormalizeShouldNotSetStaticAttribute()
+    {
+        $obj = $this->normalizer->denormalize(array('staticObject' => true), __NAMESPACE__.'\GetSetDummy');
+
+        $this->assertEquals(new GetSetDummy(), $obj);
+        $this->assertNull(GetSetDummy::getStaticObject());
+    }
+
     public function testNoTraversableSupport()
     {
         $this->assertFalse($this->normalizer->supportsNormalization(new \ArrayObject()));
+    }
+
+    public function testNoStaticGetSetSupport()
+    {
+        $this->assertFalse($this->normalizer->supportsNormalization(new ObjectWithJustStaticSetterDummy()));
     }
 
     public function testPrivateSetter()
@@ -568,6 +580,7 @@ class GetSetDummy
     private $baz;
     protected $camelCase;
     protected $object;
+    private static $staticObject;
 
     public function getFoo()
     {
@@ -627,6 +640,16 @@ class GetSetDummy
     public function getObject()
     {
         return $this->object;
+    }
+
+    public static function getStaticObject()
+    {
+        return self::$staticObject;
+    }
+
+    public static function setStaticObject($object)
+    {
+        self::$staticObject = $object;
     }
 }
 
@@ -797,5 +820,20 @@ class ObjectWithPrivateSetterDummy
 
     private function setFoo($foo)
     {
+    }
+}
+
+class ObjectWithJustStaticSetterDummy
+{
+    private static $foo = 'bar';
+
+    public static function getFoo()
+    {
+        return self::$foo;
+    }
+
+    public static function setFoo($foo)
+    {
+        self::$foo = $foo;
     }
 }

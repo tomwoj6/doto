@@ -23,12 +23,15 @@
         "symfony/http-kernel": ""
     },
     "autoload": {
-        "psr-4": { "Symfony\\Bridge\\Swiftmailer\\": "" }
+        "psr-4": { "Symfony\\Bridge\\Swiftmailer\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
     },
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "2.7-dev"
+            "dev-master": "2.8-dev"
         }
     }
 }
